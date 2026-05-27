@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: scraper-config
+  namespace: scraper-app
+data:
+  RABBITMQ_HOST: rabbitmq-service
+  RABBITMQ_PORT: "5672"
+  QUEUE_NAME: scraping.jobs
+  RESULTS_QUEUE: scraping.results
+  SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-service:5432/Scrapper
