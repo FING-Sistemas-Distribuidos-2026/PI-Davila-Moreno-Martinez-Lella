@@ -1,10 +1,10 @@
 import json
 import pika
 import time
-import random
 import os
 
-
+from scrapers.registry import ScraperRegistry
+import scrapers.stores
 
 RABBITMQ_HOST = os.getenv("RABBITMQ_HOST", "localhost")
 RETRY_QUEUE = os.getenv("RETRY_QUEUE", "scraping.jobs.retry")
@@ -23,8 +23,18 @@ def process_message(message, channel):
     print(f"Search ID: {search_id}")
     print(f"Query: {query}")
     print(f"Store: {store}")
-    print("Procesando scraping simulado...")
-    results = generate_fake_results(query, store)
+    print("Procesando scraping real...")
+    
+    try:
+        scraper = ScraperRegistry.get(store)
+        results = scraper.search(query)
+    except ValueError as e:
+        print(f"Error de scraper: {e}")
+        results = []
+    except Exception as e:
+        print(f"Error inesperado scrapeando {store}: {e}")
+        results = []
+
     result_message = {
         "searchId": search_id,
         "store": store,
@@ -32,31 +42,8 @@ def process_message(message, channel):
         "results": results
     }
     publish_result(channel, result_message, RESULTS_QUEUE)
-    time.sleep(2)
     print("Procesamiento finalizado")
     print("====================================")
-
-
-def generate_fake_results(query, store):
-    """
-    Simula resultados de scraping.
-    Más adelante esta función se reemplaza por scraping real.
-    """
-
-    products = [
-        {
-            "name": f"{query} - Modelo Runner Pro",
-            "price": random.randint(70000, 150000),
-            "url": f"https://{store}.com/producto/runner-pro"
-        },
-        {
-            "name": f"{query} - Modelo Ultra Light",
-            "price": random.randint(80000, 180000),
-            "url": f"https://{store}.com/producto/ultra-light"
-        }
-    ]
-
-    return products
 
 
 def publish_result(channel, result_message,queue_name):

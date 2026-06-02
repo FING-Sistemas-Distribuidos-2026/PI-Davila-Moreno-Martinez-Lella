@@ -43,7 +43,7 @@ form.addEventListener("submit", async function (event) {
         connectWebSocket(searchId);
         startPollingResults(searchId);
 
-    } catch (error) {
+    } catch (error) {   
         statusText.textContent = "Error conectando con la API";
         console.error(error);
     }

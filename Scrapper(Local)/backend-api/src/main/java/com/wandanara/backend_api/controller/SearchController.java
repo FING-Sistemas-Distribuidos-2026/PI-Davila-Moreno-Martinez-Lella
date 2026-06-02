@@ -56,7 +56,7 @@ public class SearchController {
 
         searchRepository.save(search);
 
-        List<String> stores = List.of("tienda-a", "tienda-b", "tienda-c");
+        List<String> stores = List.of("compragamer");
 
         for (String store : stores) {
             ScrapingJobMessage message = new ScrapingJobMessage(
