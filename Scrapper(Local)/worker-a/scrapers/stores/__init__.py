@@ -4,5 +4,6 @@
 from .example_store import ExampleStoreScraper
 from .compragamer import CompraGamerScraper
 from .maximus import MaximusScraper
+from .gamingcity import GamingCityScraper
 
-__all__ = ["ExampleStoreScraper", "CompraGamerScraper", "MaximusScraper"]
+__all__ = ["ExampleStoreScraper", "CompraGamerScraper", "MaximusScraper", "GamingCityScraper"]
