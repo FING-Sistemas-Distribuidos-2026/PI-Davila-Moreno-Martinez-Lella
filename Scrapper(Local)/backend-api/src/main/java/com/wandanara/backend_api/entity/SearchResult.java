@@ -20,15 +20,28 @@ public class SearchResult {
 
     private String url;
 
+    private java.time.LocalDateTime scrapedAt;
+
     public SearchResult() {
     }
 
+    public SearchResult(String searchId, String store, String name, Integer price, String url, java.time.LocalDateTime scrapedAt) {
+        this.searchId = searchId;
+        this.store = store;
+        this.name = name;
+        this.price = price;
+        this.url = url;
+        this.scrapedAt = scrapedAt;
+    }
+
+    // Constructor for backward compatibility during cloning if scrapedAt is not provided
     public SearchResult(String searchId, String store, String name, Integer price, String url) {
         this.searchId = searchId;
         this.store = store;
         this.name = name;
         this.price = price;
         this.url = url;
+        this.scrapedAt = java.time.LocalDateTime.now();
     }
 
     public Long getId() {
@@ -55,6 +68,10 @@ public class SearchResult {
         return url;
     }
 
+    public java.time.LocalDateTime getScrapedAt() {
+        return scrapedAt;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -77,5 +94,9 @@ public class SearchResult {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public void setScrapedAt(java.time.LocalDateTime scrapedAt) {
+        this.scrapedAt = scrapedAt;
     }
 }

@@ -8,6 +8,7 @@ public class ScrapingResultMessage {
     private String store;
     private String status;
     private List<ProductResult> results;
+    private String cachedAt;
 
     public ScrapingResultMessage() {
     }
@@ -49,5 +50,13 @@ public class ScrapingResultMessage {
 
     public void setResults(List<ProductResult> results) {
         this.results = results;
+    }
+
+    public String getCachedAt() {
+        return cachedAt;
+    }
+
+    public void setCachedAt(String cachedAt) {
+        this.cachedAt = cachedAt;
     }
 }

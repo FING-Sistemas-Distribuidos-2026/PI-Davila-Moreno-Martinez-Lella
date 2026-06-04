@@ -3,5 +3,6 @@
 
 from .example_store import ExampleStoreScraper
 from .compragamer import CompraGamerScraper
+from .maximus import MaximusScraper
 
-__all__ = ["ExampleStoreScraper", "CompraGamerScraper"]
+__all__ = ["ExampleStoreScraper", "CompraGamerScraper", "MaximusScraper"]

@@ -17,6 +17,11 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d Scrapper"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   backend-api:
     build: ./backend-api
@@ -28,8 +33,10 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 1234
     depends_on:
-      - rabbitmq
-      - postgres
+      rabbitmq:
+        condition: service_started
+      postgres:
+        condition: service_healthy
 
   frontend:
     build: ./frontend

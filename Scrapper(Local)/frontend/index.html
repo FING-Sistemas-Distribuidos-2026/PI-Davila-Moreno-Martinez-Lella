@@ -2,33 +2,96 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Comparador de Precios</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparador de Precios Premium</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="background-effects">
+        <div class="glow glow-1"></div>
+        <div class="glow glow-2"></div>
+    </div>
 
     <main class="container">
-        <h1>Comparador de Precios</h1>
+        <header class="header">
+            <h1>Precio<span>Scout</span></h1>
+            <p>Encuentra el mejor hardware al mejor precio</p>
+        </header>
 
-        <form id="searchForm">
-            <input 
-                type="text" 
-                id="queryInput" 
-                placeholder="Ej: zapatillas running"
-            >
-            <button type="submit">Buscar</button>
-        </form>
+        <section class="search-section glass-panel">
+            <form id="searchForm">
+                <div class="search-input-wrapper">
+                    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <input 
+                        type="text" 
+                        id="queryInput" 
+                        placeholder="Ej: RTX 4060, Ryzen 5 5600..."
+                        autocomplete="off"
+                    >
+                </div>
+                
+                <div class="scrapers-selection">
+                    <p class="selection-title">Selecciona hasta 3 tiendas:</p>
+                    <div class="checkbox-group">
+                        <label class="custom-checkbox">
+                            <input type="checkbox" name="scraper" value="compragamer" checked>
+                            <span class="checkmark"></span>
+                            CompraGamer
+                        </label>
+                        <label class="custom-checkbox">
+                            <input type="checkbox" name="scraper" value="maximus" checked>
+                            <span class="checkmark"></span>
+                            Maximus
+                        </label>
+                        <label class="custom-checkbox">
+                            <input type="checkbox" name="scraper" value="example-store">
+                            <span class="checkmark"></span>
+                            Mock Store
+                        </label>
+                    </div>
+                </div>
 
-        <section>
-            <h2>Estado</h2>
-            <p id="status">Esperando búsqueda...</p>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary" id="submitBtn">
+                        <span>Buscar Precios</span>
+                        <div class="loader hidden" id="searchLoader"></div>
+                    </button>
+                    <button type="button" class="btn-secondary" id="forceUpdateBtn" title="Forzar scraping (Ignorar caché)">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        <span>Actualizar</span>
+                    </button>
+                </div>
+            </form>
         </section>
 
-        <section>
-            <h2>Resultados</h2>
-            <div id="results"></div>
+        <section class="status-section">
+            <div id="statusBadge" class="status-badge hidden">
+                <span class="pulse-dot"></span>
+                <span id="status">Conectando...</span>
+            </div>
+            <div id="cachedBadge" class="cached-badge hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span id="cachedText">Resultados en caché</span>
+            </div>
+        </section>
+
+        <section class="results-section">
+            <!-- Dynamic grid container for store columns -->
+            <div id="resultsGrid" class="results-grid">
+                <!-- Columns will be injected here by JS -->
+            </div>
         </section>
     </main>
+    
     <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
     <script src="app.js"></script>
 </body>
