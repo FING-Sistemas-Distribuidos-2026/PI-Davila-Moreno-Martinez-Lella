@@ -41,6 +41,8 @@ services:
   frontend:
     build: ./frontend
     container_name: scraper-frontend
+    environment:
+      BACKEND_URL: http://backend-api:8080
     ports:
       - "5500:80"
     depends_on:

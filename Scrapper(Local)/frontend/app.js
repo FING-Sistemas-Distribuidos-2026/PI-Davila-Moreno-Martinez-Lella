@@ -76,6 +76,13 @@ function updateStoreCount(storeName) {
         countElement.textContent = itemsContainer.children.length;
     }
 }
+function generateSearchId() {
+    if (window.crypto && typeof window.crypto.randomUUID === "function") {
+        return window.crypto.randomUUID();
+    }
+
+    return "search-" + Date.now() + "-" + Math.random().toString(36).substring(2, 15);
+}
 
 
 function triggerSearch(forceUpdate = false) {
@@ -101,7 +108,7 @@ function triggerSearch(forceUpdate = false) {
     statusBadge.classList.remove("hidden");
     statusText.textContent = "Estableciendo conexión segura...";
 
-    const searchId = crypto.randomUUID();
+    const searchId = generateSearchId();
     connectWebSocket(searchId, query, selectedScrapers, forceUpdate);
 }
 
@@ -119,8 +126,11 @@ function connectWebSocket(searchId, query, selectedScrapers, forceUpdate) {
         stompClient.deactivate();
     }
 
+    const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
+    const wsUrl = `${wsProtocol}://${window.location.host}/ws`;
+
     stompClient = new StompJs.Client({
-        brokerURL: "ws://localhost:8080/ws",
+        brokerURL: wsUrl,
 
         onConnect: function () {
             statusText.textContent = "Buscando mejores precios...";
@@ -134,7 +144,7 @@ function connectWebSocket(searchId, query, selectedScrapers, forceUpdate) {
             // Darle tiempo al broker STOMP para confirmar la suscripción (500ms)
             setTimeout(() => {
                 console.log(`[DEBUG] Enviando POST /api/search para query: '${query}', forceUpdate: ${forceUpdate}`);
-                fetch("http://localhost:8080/api/search", {
+                fetch("/api/search", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -149,7 +159,7 @@ function connectWebSocket(searchId, query, selectedScrapers, forceUpdate) {
                     console.log(`[DEBUG] API HTTP Response status: ${response.status}`);
                 }).catch(error => {
                     console.error("[DEBUG] Error en POST /api/search:", error);
-                    statusText.textContent = "Error conectando con la API";
+                    statusText.textContent = "Servicio no disponible";
                     resetBtn();
                 });
             }, 500);

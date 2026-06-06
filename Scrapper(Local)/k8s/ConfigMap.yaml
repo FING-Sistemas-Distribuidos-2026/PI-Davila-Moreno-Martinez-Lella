@@ -8,4 +8,8 @@ data:
   RABBITMQ_PORT: "5672"
   QUEUE_NAME: scraping.jobs
   RESULTS_QUEUE: scraping.results
-  SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-service:5432/Scrapper
+  SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-service:5432/scraperdb
+  RETRY_QUEUE: scraping.jobs.retry
+  DLQ_QUEUE: scraping.jobs.dlq
+  MAX_ATTEMPTS: "3"
+  BACKEND_URL: http://backend-api-service:8080

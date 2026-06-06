@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-api
+  namespace: scraper-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-api
+
+  template:
+    metadata:
+      labels:
+        app: backend-api
+
+    spec:
+      containers:
+        - name: backend-api
+          image: f4cundol3ll4/backend-api:latest
+
+          ports:
+            - containerPort: 8080
+              name: http
+
+          env:
+            - name: RABBITMQ_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: scraper-config
+                  key: RABBITMQ_HOST
+
+            - name: RABBITMQ_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: scraper-config
+                  key: RABBITMQ_PORT
+
+            - name: QUEUE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: scraper-config
+                  key: QUEUE_NAME
+
+            - name: RESULTS_QUEUE
+              valueFrom:
+                configMapKeyRef:
+                  name: scraper-config
+                  key: RESULTS_QUEUE
+
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: scraper-config
+                  key: SPRING_DATASOURCE_URL
+
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: scraper-secret
+                  key: SPRING_DATASOURCE_USERNAME
+
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: scraper-secret
+                  key: SPRING_DATASOURCE_PASSWORD

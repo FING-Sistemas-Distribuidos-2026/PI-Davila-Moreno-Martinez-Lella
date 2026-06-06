@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  namespace: scraper-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      containers:
+        - name: worker
+          image: f4cundol3ll4/worker:latest
+          imagePullPolicy: Always
+
+          env:
+            - name: RABBITMQ_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: scraper-config
+                  key: RABBITMQ_HOST
+
+            - name: RABBITMQ_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: scraper-config
+                  key: RABBITMQ_PORT
+
+            - name: QUEUE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: scraper-config
+                  key: QUEUE_NAME
+
+            - name: RESULTS_QUEUE
+              valueFrom:
+                configMapKeyRef:
+                  name: scraper-config
+                  key: RESULTS_QUEUE
+
+            - name: RETRY_QUEUE
+              valueFrom:
+                configMapKeyRef:
+                  name: scraper-config
+                  key: RETRY_QUEUE
+
+            - name: DLQ_QUEUE
+              valueFrom:
+                configMapKeyRef:
+                  name: scraper-config
+                  key: DLQ_QUEUE
+
+            - name: MAX_ATTEMPTS
+              valueFrom:
+                configMapKeyRef:
+                  name: scraper-config
+                  key: MAX_ATTEMPTS
+
+            - name: RABBITMQ_USER
+              valueFrom:
+                secretKeyRef:
+                  name: scraper-secret
+                  key: RABBITMQ_USER
+
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: scraper-secret
+                  key: RABBITMQ_PASSWORD

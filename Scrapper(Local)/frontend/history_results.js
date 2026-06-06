@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8080/api/search";
+const API_URL = "/api/search";
 const resultsGrid = document.getElementById("resultsGrid");
 const loadingIndicator = document.getElementById("loadingIndicator");
 const queryDisplay = document.getElementById("queryDisplay");
