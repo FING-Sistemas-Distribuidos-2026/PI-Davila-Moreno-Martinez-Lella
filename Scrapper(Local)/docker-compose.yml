@@ -1,10 +1,34 @@
 services:
   rabbitmq:
-    image: rabbitmq:3-management
+    build: ./rabbitmq
     container_name: scraper-rabbitmq
     ports:
       - "5672:5672"
       - "15672:15672"
+      - "15692:15692"
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: scraper-prometheus
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    depends_on:
+      - rabbitmq
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: scraper-grafana
+    volumes:
+      - ./monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
 
   postgres:
     image: postgres:16
