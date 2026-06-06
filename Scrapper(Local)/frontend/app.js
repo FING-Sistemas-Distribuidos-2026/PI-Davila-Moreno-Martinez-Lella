@@ -14,6 +14,19 @@ let stompClient = null;
 let shownResults = new Set();
 let activeStores = new Set();
 
+// Filter elements
+const filtersSection = document.getElementById("filtersSection");
+const filterText = document.getElementById("filterText");
+const filterPriceMin = document.getElementById("filterPriceMin");
+const filterPriceMax = document.getElementById("filterPriceMax");
+const filterSort = document.getElementById("filterSort");
+const clearFiltersBtn = document.getElementById("clearFiltersBtn");
+const totalResultsCount = document.getElementById("totalResultsCount");
+
+// --- In-memory data store for filtering ---
+// Each entry: { store, name, price, url, uniqueKey }
+let allProducts = [];
+
 // --- Checkbox Logic ---
 const checkboxes = document.querySelectorAll('input[name="scraper"]');
 
@@ -41,6 +54,109 @@ function formatPrice(price) {
         minimumFractionDigits: 0
     }).format(price);
 }
+
+// --- Debounce utility ---
+function debounce(fn, delay) {
+    let timer;
+    return function (...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn.apply(this, args), delay);
+    };
+}
+
+// --- Filter Logic ---
+function applyFilters() {
+    const textFilter = filterText.value.trim().toLowerCase();
+    const priceMin = filterPriceMin.value !== "" ? parseInt(filterPriceMin.value) : null;
+    const priceMax = filterPriceMax.value !== "" ? parseInt(filterPriceMax.value) : null;
+    const sortMode = filterSort.value;
+
+    // Group products by store
+    const storeMap = {};
+    allProducts.forEach(p => {
+        if (!storeMap[p.store]) storeMap[p.store] = [];
+        storeMap[p.store].push(p);
+    });
+
+    let totalVisible = 0;
+
+    // Apply filters to each store
+    for (const store of activeStores) {
+        const products = storeMap[store] || [];
+
+        // Filter
+        let filtered = products.filter(p => {
+            if (textFilter && !p.name.toLowerCase().includes(textFilter)) return false;
+            if (priceMin !== null && p.price < priceMin) return false;
+            if (priceMax !== null && p.price > priceMax) return false;
+            return true;
+        });
+
+        // Sort
+        if (sortMode === "price-asc") {
+            filtered.sort((a, b) => a.price - b.price);
+        } else if (sortMode === "price-desc") {
+            filtered.sort((a, b) => b.price - a.price);
+        } else if (sortMode === "name-asc") {
+            filtered.sort((a, b) => a.name.localeCompare(b.name, 'es'));
+        } else if (sortMode === "name-desc") {
+            filtered.sort((a, b) => b.name.localeCompare(a.name, 'es'));
+        }
+
+        // Re-render the store column items
+        const itemsContainer = document.getElementById(`items-${store}`);
+        if (!itemsContainer) continue;
+
+        itemsContainer.innerHTML = "";
+
+        if (filtered.length === 0) {
+            const emptyMsg = document.createElement("div");
+            emptyMsg.className = "store-empty-filter";
+            emptyMsg.textContent = "Sin resultados con estos filtros";
+            itemsContainer.appendChild(emptyMsg);
+        } else {
+            filtered.forEach(producto => {
+                const card = document.createElement("div");
+                card.className = "card";
+                card.innerHTML = `
+                    <h3>${producto.name}</h3>
+                    <div class="card-footer">
+                        <span class="price">${formatPrice(producto.price)}</span>
+                        <a href="${producto.url}" class="btn-link" target="_blank">Ver Oferta</a>
+                    </div>
+                `;
+                itemsContainer.appendChild(card);
+            });
+        }
+
+        totalVisible += filtered.length;
+
+        // Update store count
+        const countElement = document.getElementById(`count-${store}`);
+        if (countElement) {
+            countElement.textContent = filtered.length;
+        }
+    }
+
+    // Update total counter
+    totalResultsCount.textContent = totalVisible;
+}
+
+function clearFilters() {
+    filterText.value = "";
+    filterPriceMin.value = "";
+    filterPriceMax.value = "";
+    filterSort.value = "default";
+    applyFilters();
+}
+
+// Attach filter listeners with debounce
+const debouncedApply = debounce(applyFilters, 250);
+filterText.addEventListener("input", debouncedApply);
+filterPriceMin.addEventListener("input", debouncedApply);
+filterPriceMax.addEventListener("input", debouncedApply);
+filterSort.addEventListener("change", applyFilters);
+clearFiltersBtn.addEventListener("click", clearFilters);
 
 // --- DOM Manipulation for Columns ---
 function getOrCreateStoreColumn(storeName) {
@@ -102,7 +218,10 @@ function triggerSearch(forceUpdate = false) {
     resultsGrid.innerHTML = "";
     shownResults.clear();
     activeStores.clear();
+    allProducts = [];
     cachedBadge.classList.add("hidden");
+    filtersSection.classList.add("hidden");
+    clearFilters();
     submitBtnSpan.textContent = "Conectando...";
     searchLoader.classList.remove("hidden");
     statusBadge.classList.remove("hidden");
@@ -227,6 +346,15 @@ function showResultMessage(resultMessage) {
 
         shownResults.add(uniqueKey);
 
+        // Store product data in memory for filtering
+        allProducts.push({
+            store: store,
+            name: producto.name,
+            price: producto.price,
+            url: producto.url,
+            uniqueKey: uniqueKey
+        });
+
         const card = document.createElement("div");
         card.className = "card";
 
@@ -243,6 +371,12 @@ function showResultMessage(resultMessage) {
 
     updateStoreCount(store);
     
+    // Show filters panel and update total count
+    if (allProducts.length > 0) {
+        filtersSection.classList.remove("hidden");
+        totalResultsCount.textContent = allProducts.length;
+    }
+
     // Once results start flowing, we can reset the search button text
     if (submitBtnSpan.textContent === "Buscando...") {
         statusText.textContent = "Recibiendo resultados...";

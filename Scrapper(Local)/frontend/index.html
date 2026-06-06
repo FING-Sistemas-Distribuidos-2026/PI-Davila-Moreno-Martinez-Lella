@@ -92,6 +92,66 @@
             </div>
         </section>
 
+        <section id="filtersSection" class="filters-section hidden">
+            <div class="filters-panel glass-panel">
+                <div class="filters-header">
+                    <div class="filters-title">
+                        <span>Filtros</span>
+                    </div>
+                    <div class="filters-summary" id="filtersSummary">
+                        <span id="totalResultsCount">0</span> resultados
+                    </div>
+                </div>
+
+                <div class="filters-body">
+                    <div class="filter-group">
+                        <label class="filter-label" for="filterText">Buscar en resultados</label>
+                        <div class="filter-input-wrapper">
+                            <svg class="filter-search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            <input type="text" id="filterText" placeholder="Ej: DDR5, 1TB, ASUS..." autocomplete="off">
+                        </div>
+                    </div>
+
+                    <div class="filter-group filter-group-price">
+                        <label class="filter-label">Rango de precio</label>
+                        <div class="price-range-inputs">
+                            <div class="price-input-wrapper">
+                                <span class="price-prefix">$</span>
+                                <input type="number" id="filterPriceMin" placeholder="Mín" min="0">
+                            </div>
+                            <span class="price-separator">—</span>
+                            <div class="price-input-wrapper">
+                                <span class="price-prefix">$</span>
+                                <input type="number" id="filterPriceMax" placeholder="Máx" min="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="filter-group">
+                        <label class="filter-label" for="filterSort">Ordenar por</label>
+                        <select id="filterSort" class="filter-select">
+                            <option value="default">Orden original</option>
+                            <option value="price-asc">Precio: menor a mayor</option>
+                            <option value="price-desc">Precio: mayor a menor</option>
+                            <option value="name-asc">Nombre: A → Z</option>
+                            <option value="name-desc">Nombre: Z → A</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group filter-group-actions">
+                        <button type="button" class="btn-clear-filters" id="clearFiltersBtn">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="16" height="16">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                            Limpiar filtros
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section class="results-section">
             <!-- Dynamic grid container for store columns -->
             <div id="resultsGrid" class="results-grid">
