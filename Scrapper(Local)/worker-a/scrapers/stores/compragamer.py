@@ -166,7 +166,12 @@ class CompraGamerScraper(BaseScraper):
 
         # URL del producto
         product_id = item.get("id_producto") or item.get("id") or ""
-        url = self.PRODUCT_URL_TEMPLATE.format(id_producto=product_id)
+        
+        # CompraGamer ahora requiere el nombre en la URL: /producto/Nombre_Del_Producto_1234
+        name_clean = re.sub(r'[^a-zA-Z0-9\s-]', '', str(name))
+        name_slug = re.sub(r'\s+', '_', name_clean.strip())
+        
+        url = f"https://compragamer.com/producto/{name_slug}_{product_id}"
 
         return Product(name=str(name), price=price, url=url)
 

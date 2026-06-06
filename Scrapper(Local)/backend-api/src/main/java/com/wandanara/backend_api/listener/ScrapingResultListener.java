@@ -14,11 +14,14 @@ public class ScrapingResultListener {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final SearchResultRepository searchResultRepository;
+    private final com.wandanara.backend_api.repository.SearchRepository searchRepository;
 
     public ScrapingResultListener(SimpMessagingTemplate messagingTemplate,
-                                  SearchResultRepository searchResultRepository) {
+                                  SearchResultRepository searchResultRepository,
+                                  com.wandanara.backend_api.repository.SearchRepository searchRepository) {
         this.messagingTemplate = messagingTemplate;
         this.searchResultRepository = searchResultRepository;
+        this.searchRepository = searchRepository;
     }
 
     @RabbitListener(queues = RabbitConfig.RESULTS_QUEUE)
@@ -52,6 +55,12 @@ public class ScrapingResultListener {
         String destination = "/topic/search/" + message.getSearchId();
 
         messagingTemplate.convertAndSend(destination, message);
+
+        com.wandanara.backend_api.entity.Search search = searchRepository.findById(message.getSearchId()).orElse(null);
+        if (search != null && "PROCESSING".equals(search.getStatus())) {
+            search.setStatus("COMPLETED");
+            searchRepository.save(search);
+        }
 
         System.out.println("Resultado guardado en DB y enviado por WebSocket a: " + destination);
         System.out.println("====================================");

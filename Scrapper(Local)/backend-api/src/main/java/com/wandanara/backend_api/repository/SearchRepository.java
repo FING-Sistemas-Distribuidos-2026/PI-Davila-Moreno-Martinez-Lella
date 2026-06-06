@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SearchRepository extends JpaRepository<Search, String> {
     Search findFirstByQueryOrderByCreatedAtDesc(String query);
+    java.util.List<Search> findTop50ByOrderByCreatedAtDesc();
 }

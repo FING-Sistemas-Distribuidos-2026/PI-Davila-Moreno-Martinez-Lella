@@ -63,21 +63,14 @@ public class SearchController {
             latestSearch = searchRepository.findFirstByQueryOrderByCreatedAtDesc(query);
         }
 
-        Search search = new Search(
-                searchId,
-                query,
-                "PROCESSING",
-                LocalDateTime.now()
-        );
-
-        searchRepository.save(search);
+        boolean requiresScraping = false;
 
         List<String> stores;
         Object storesObj = body.get("stores");
         if (storesObj instanceof List) {
             stores = (List<String>) storesObj;
         } else {
-            stores = List.of("compragamer", "maximus");
+            stores = List.of("compragamer", "maximus", "gamingcity");
         }
 
         if (!forceUpdate && latestSearch != null) {
@@ -126,14 +119,24 @@ public class SearchController {
                     messagingTemplate.convertAndSend(destination, resultMsg);
                     System.out.println("Resultados cacheados copiados y enviados para: " + store);
                 } else {
+                    requiresScraping = true;
                     triggerScrape(searchId, query, store);
                 }
             }
         } else {
+            requiresScraping = true;
             for (String store : stores) {
                 triggerScrape(searchId, query, store);
             }
         }
+
+        Search search = new Search(
+                searchId,
+                query,
+                requiresScraping ? "PROCESSING" : "COMPLETED",
+                LocalDateTime.now()
+        );
+        searchRepository.save(search);
         return ResponseEntity.status(201).body(
                 Map.of(
                         "searchId", searchId,
@@ -148,14 +151,22 @@ public class SearchController {
         System.out.println("Mensaje enviado a RabbitMQ: " + store);
     }
 
+    @GetMapping("/history")
+    public ResponseEntity<List<Search>> getHistory() {
+        return ResponseEntity.ok(searchRepository.findTop50ByOrderByCreatedAtDesc());
+    }
+
     @GetMapping("/{searchId}/results")
-    public ResponseEntity<List<SearchResult>> getResults(@PathVariable String searchId) {
+    public ResponseEntity<java.util.Map<String, List<SearchResult>>> getResults(@PathVariable String searchId) {
         if (!searchRepository.existsById(searchId)) {
             return ResponseEntity.notFound().build();
         }
 
         List<SearchResult> results = searchResultRepository.findBySearchId(searchId);
+        
+        java.util.Map<String, List<SearchResult>> grouped = results.stream()
+                .collect(Collectors.groupingBy(SearchResult::getStore));
 
-        return ResponseEntity.ok(results);
+        return ResponseEntity.ok(grouped);
     }
 }

@@ -96,10 +96,16 @@ class GamingCityScraper(BaseScraper):
             url = href
 
         # --- Precio ---
-        price_div = item.select_one("div.price span")
-        if price_div:
-            price_text = price_div.get_text(strip=True)
-            # Extraer solo dígitos del precio (ej: "$ 135.849" → 135849)
+        # Algunos productos tienen precios anidados (precio tachado + precio oferta).
+        # Priorizar: precio oferta (price-sales) > precio estándar (price-standard) > primer span
+        price_sales = item.select_one("span.price-sales")
+        price_standard = item.select_one("span.price-standard")
+        price_fallback = item.select_one("div.price span")
+
+        price_el = price_sales or price_standard or price_fallback
+        if price_el:
+            # Usar solo el texto directo del elemento, no de hijos anidados
+            price_text = price_el.string or price_el.get_text(strip=True)
             price = int(re.sub(r"[^\d]", "", price_text) or "0")
         else:
             price = 0

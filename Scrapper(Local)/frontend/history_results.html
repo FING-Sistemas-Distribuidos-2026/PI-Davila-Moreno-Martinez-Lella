@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados - PrecioScout</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #94a3b8;
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            transition: color 0.2s ease;
+        }
+        .btn-back:hover {
+            color: #f8fafc;
+        }
+        .title-container {
+            margin-bottom: 2rem;
+        }
+        .query-title {
+            font-size: 2rem;
+            color: #f8fafc;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+        .query-subtitle {
+            color: #94a3b8;
+        }
+        .empty-history {
+            text-align: center;
+            padding: 3rem;
+            color: #94a3b8;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 12px;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="background-effects">
+        <div class="glow glow-1"></div>
+        <div class="glow glow-2"></div>
+    </div>
+
+    <main class="container">
+        <header class="header" style="margin-bottom: 1rem;">
+            <h1>Precio<span>Scout</span></h1>
+            <p>Archivo de búsqueda</p>
+        </header>
+
+        <a href="history.html" class="btn-back">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Volver al historial
+        </a>
+
+        <div class="title-container">
+            <h2 class="query-title">Resultados de: <span id="queryDisplay" style="color: #6366f1;">...</span></h2>
+            <p class="query-subtitle">Datos archivados de la búsqueda estática.</p>
+        </div>
+
+        <section class="results-section">
+            <div id="loadingIndicator" class="empty-history">
+                <div class="loader" style="margin: 0 auto 1rem auto; width: 30px; height: 30px; border-width: 3px;"></div>
+                Cargando resultados...
+            </div>
+            
+            <!-- Dynamic grid container for store columns -->
+            <div id="resultsGrid" class="results-grid hidden">
+                <!-- Columns will be injected here by JS -->
+            </div>
+        </section>
+    </main>
+    
+    <script src="history_results.js"></script>
+</body>
+</html>
