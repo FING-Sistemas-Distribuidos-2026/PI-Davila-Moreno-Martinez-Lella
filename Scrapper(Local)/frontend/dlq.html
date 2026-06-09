@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Búsquedas Fallidas - PrecioScout</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .dlq-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .dlq-card {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-left: 4px solid #ef4444;
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            color: inherit;
+        }
+        .dlq-card.new-item {
+            animation: highlightIn 1.5s ease-out;
+        }
+        @keyframes highlightIn {
+            0% { background: rgba(239, 68, 68, 0.2); transform: translateX(-10px); }
+            100% { background: rgba(30, 41, 59, 0.5); transform: translateX(0); }
+        }
+        .dlq-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .dlq-query {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #f8fafc;
+        }
+        .dlq-store {
+            font-size: 0.95rem;
+            color: #e2e8f0;
+            font-weight: 500;
+        }
+        .dlq-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.875rem;
+            color: #94a3b8;
+            align-items: center;
+        }
+        .dlq-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .empty-dlq {
+            text-align: center;
+            padding: 3rem;
+            color: #94a3b8;
+        }
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #94a3b8;
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            transition: color 0.2s ease;
+        }
+        .btn-back:hover {
+            color: #f8fafc;
+        }
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: #94a3b8;
+            background: rgba(15, 23, 42, 0.6);
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #22c55e;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #22c55e;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-effects">
+        <div class="glow glow-1"></div>
+        <div class="glow glow-2"></div>
+    </div>
+
+    <main class="container" style="max-width: 800px;">
+        <header class="header" style="margin-bottom: 1rem;">
+            <h1>Precio<span>Scout</span></h1>
+            <p>Monitoreo de búsquedas fallidas</p>
+        </header>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <a href="index.html" class="btn-back" style="margin-bottom: 0;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Volver a la búsqueda
+            </a>
+            <div class="live-indicator">
+                <div class="live-dot"></div>
+                Monitoreo en vivo (DLQ)
+            </div>
+        </div>
+
+        <section class="glass-panel" style="padding: 2rem;">
+            <div id="loadingIndicator" class="empty-dlq">
+                <div class="loader" style="margin: 0 auto 1rem auto; width: 30px; height: 30px; border-width: 3px;"></div>
+                Cargando datos...
+            </div>
+            
+            <div id="dlqList" class="dlq-list hidden">
+                <!-- Se inyectará por JS -->
+            </div>
+        </section>
+    </main>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+    <script src="dlq.js"></script>
+</body>
+</html>

@@ -40,4 +40,12 @@ public class ScrapingJobMessage {
     public void setStore(String store) {
         this.store = store;
     }
-}
+
+    public Integer getAttempts() {
+        return attempts;
+    }
+
+    public void setAttempts(Integer attempts) {
+        this.attempts = attempts;
+    }
+}
